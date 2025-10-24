@@ -1,2 +1,6 @@
 hey there
 whats good
+implement gravity [x]
+block collision [x]
+block detection []
+horizontal block clearing []
