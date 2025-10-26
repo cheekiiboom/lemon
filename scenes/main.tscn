@@ -1,18 +1,16 @@
-[gd_scene load_steps=8 format=3 uid="uid://cyhuuwafm5w20"]
+[gd_scene load_steps=6 format=3 uid="uid://cyhuuwafm5w20"]
 
-[ext_resource type="Texture2D" uid="uid://ucpx0hcngr4y" path="res://assets/star.png" id="1_o5qli"]
-[ext_resource type="Script" uid="uid://cwde701ax4e84" path="res://scripts/block.gd" id="2_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://dkduv2qtxlesj" path="res://assets/moon.png" id="2_sugp2"]
 [ext_resource type="Texture2D" uid="uid://duiwgyl5w2gw3" path="res://assets/mountain.png" id="3_jyhfs"]
 [ext_resource type="Texture2D" uid="uid://y0qbxidfua3j" path="res://assets/floor.png" id="5_tbgi4"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tefeu"]
-size = Vector2(51.2, 51.2)
+[ext_resource type="Script" uid="uid://l1k73xevawcv" path="res://scripts/mouse.gd" id="6_tefeu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tbgi4"]
 size = Vector2(1087, 27)
 
 [node name="Node2D" type="Node2D"]
+metadata/_edit_horizontal_guides_ = [459.0]
+metadata/_edit_vertical_guides_ = [248.0]
 
 [node name="Moon" type="Sprite2D" parent="."]
 visible = false
@@ -24,66 +22,6 @@ visible = false
 position = Vector2(841, 213)
 texture = ExtResource("3_jyhfs")
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-position = Vector2(450, 451)
-collision_layer = 5
-collision_mask = 5
-floor_stop_on_slope = false
-script = ExtResource("2_jyhfs")
-fall_acceleration = 98
-
-[node name="Star" type="Sprite2D" parent="CharacterBody2D"]
-scale = Vector2(0.2, 0.2)
-texture = ExtResource("1_o5qli")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
-shape = SubResource("RectangleShape2D_tefeu")
-
-[node name="CharacterBody2D3" type="CharacterBody2D" parent="."]
-position = Vector2(338, 448)
-collision_layer = 5
-collision_mask = 5
-floor_stop_on_slope = false
-script = ExtResource("2_jyhfs")
-fall_acceleration = 98
-
-[node name="Star" type="Sprite2D" parent="CharacterBody2D3"]
-scale = Vector2(0.2, 0.2)
-texture = ExtResource("1_o5qli")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D3"]
-shape = SubResource("RectangleShape2D_tefeu")
-
-[node name="CharacterBody2D4" type="CharacterBody2D" parent="."]
-position = Vector2(411, 522)
-collision_layer = 5
-collision_mask = 5
-floor_stop_on_slope = false
-script = ExtResource("2_jyhfs")
-fall_acceleration = 98
-
-[node name="Star" type="Sprite2D" parent="CharacterBody2D4"]
-scale = Vector2(0.2, 0.2)
-texture = ExtResource("1_o5qli")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D4"]
-shape = SubResource("RectangleShape2D_tefeu")
-
-[node name="CharacterBody2D2" type="CharacterBody2D" parent="."]
-position = Vector2(453, 586)
-collision_layer = 5
-collision_mask = 5
-floor_stop_on_slope = false
-script = ExtResource("2_jyhfs")
-fall_acceleration = 98
-
-[node name="Star" type="Sprite2D" parent="CharacterBody2D2"]
-scale = Vector2(0.2, 0.2)
-texture = ExtResource("1_o5qli")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D2"]
-shape = SubResource("RectangleShape2D_tefeu")
-
 [node name="Floor StaticBody2D" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor StaticBody2D"]
@@ -94,3 +32,6 @@ shape = SubResource("RectangleShape2D_tbgi4")
 position = Vector2(585.99994, 644)
 scale = Vector2(4.2578125, 0.19531235)
 texture = ExtResource("5_tbgi4")
+
+[node name="InputHandler" type="Node2D" parent="."]
+script = ExtResource("6_tefeu")
