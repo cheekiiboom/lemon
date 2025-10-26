@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://cn2n5vkqyex43"]
+
+[ext_resource type="Script" uid="uid://cwde701ax4e84" path="res://scripts/block.gd" id="1_o5gqr"]
+[ext_resource type="Texture2D" uid="uid://duiwgyl5w2gw3" path="res://assets/mountain.png" id="2_o5gqr"]
+
+[node name="MountainBlock" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_layer = 5
+collision_mask = 5
+floor_stop_on_slope = false
+script = ExtResource("1_o5gqr")
+fall_acceleration = 500
+color = 2
+texture = ExtResource("2_o5gqr")
+block_scale = Vector2(0.2, 0.2)
+collision_layers_2d = 4
