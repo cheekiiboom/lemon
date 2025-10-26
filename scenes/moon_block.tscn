@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dj3pbecsfgapa"]
+
+[ext_resource type="Script" uid="uid://cwde701ax4e84" path="res://scripts/block.gd" id="1_nugbx"]
+[ext_resource type="Texture2D" uid="uid://dkduv2qtxlesj" path="res://assets/moon.png" id="2_nugbx"]
+
+[node name="MoonBlock" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_layer = 5
+collision_mask = 5
+floor_stop_on_slope = false
+script = ExtResource("1_nugbx")
+fall_acceleration = 500
+color = 3
+texture = ExtResource("2_nugbx")
+block_scale = Vector2(0.2, 0.2)
+collision_layers_2d = 4
