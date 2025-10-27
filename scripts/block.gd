@@ -20,6 +20,8 @@ var sprite = Sprite2D.new()
 var destroy_queued = false
 enum Direction {UP,DOWN,LEFT,RIGHT,NONE}
 
+var freeze_block = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	add_sprite()
@@ -37,16 +39,18 @@ func add_sprite() -> bool:
 	return true
 
 func add_raycast(direction) -> bool:
+	var target_position = Vector2.ZERO
 	match direction:
 		Direction.UP:
-			raycasts[direction].target_position = Vector2(0, -block_height()*.5)
+			target_position = Vector2(0, -block_height()*.5)
 		Direction.DOWN:
-			raycasts[direction].target_position = Vector2(0, block_height()*.5)
+			target_position = Vector2(0, block_height()*.5)
 		Direction.LEFT:
-			raycasts[direction].target_position = Vector2(-block_width()*.5, 0)
+			target_position = Vector2(-block_width()*.5, 0)
 		Direction.RIGHT:
-			raycasts[direction].target_position = Vector2(block_width()*.5, 0)
-	raycasts[direction].target_position *= Vector2(raycast_offset, raycast_offset)
+			target_position = Vector2(block_width()*.5, 0)
+	target_position *= Vector2(raycast_offset, raycast_offset)
+	raycasts[direction].target_position = target_position
 	raycasts[direction].force_raycast_update()
 	raycasts[direction].collision_mask = collision_layers_2d
 	add_child(raycasts[direction])
@@ -67,8 +71,17 @@ func add_collision_box() -> bool:
 func get_color():
 	return color
 
+# Freeze the block
+# Useful for swapping blocks
+func set_freeze_block(freeze: bool) -> void:
+	collision_shape.disabled = freeze
+	#if freeze:
+	freeze_block = freeze
+	# TODO: Fix the blocks from shifting 
+	#		after re-enabling collision + gravity
+
 # destroy this block
-func destroy():
+func destroy() -> void:
 	destroy_queued = true
 	for direction in raycasts:
 		var rc = raycasts[direction]
@@ -76,7 +89,7 @@ func destroy():
 			rc.queue_free()
 	var tween = get_tree().create_tween()
 	for n in 3:
-		tween.tween_property(sprite, "modulate", Color.RED, 0.1)
+		tween.tween_property(sprite, "modulate", Color.DARK_SLATE_BLUE, 0.1)
 		tween.tween_property(sprite, "modulate", Color.WHITE, 0.1)
 	tween.chain().tween_property(sprite, "scale", Vector2(), 0.1).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(queue_free)
@@ -86,10 +99,10 @@ func get_collison_directions() -> Dictionary:
 	var active_raycast_directions = {}
 	for dir in raycasts:
 		var collider = raycasts[dir].get_collider()
-		if !collider:
-			continue
-		active_raycast_directions.set(dir, collider)
+		if collider:
+			active_raycast_directions.set(dir, collider)
 	return active_raycast_directions
+
 
 func detect_and_clear_blocks() -> void:
 	# gets the block detected by raycast
@@ -135,9 +148,12 @@ func opposite_direction(direction: Direction) -> Direction:
 	return Direction.NONE
 
 func _physics_process(delta: float) -> void:
-	if destroy_queued:
-		return
+	if destroy_queued: return
+	if freeze_block: return
 	detect_and_clear_blocks()
+	
+	
+	# Gravity
 	target_velocity.y = target_velocity.y + (fall_acceleration * delta)
 	velocity = target_velocity
 	move_and_slide()

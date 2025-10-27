@@ -2,13 +2,78 @@ extends Node2D
 
 enum BlockType {STAR,MOUNTAIN,MOON}
 
+var shift_play_enabled = false
+
+# Testing Block Swapping
+var block_1: Node = null
+var block_2: Node = null
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
 
+func reset_select() -> void:
+	for block in [block_1, block_2]:
+		block.sprite.modulate = Color.WHITE
+		block.set_freeze_block(false)
+	block_1 = null
+	block_2 = null
+	pass
+
+func select_block(block_number):
+	var block = get_block_at_cursor()
+	if !block:
+		return
+	if block==block_1 or block==block_2:
+		return
+	# Select block
+	block.sprite.modulate = Color.DARK_GRAY
+	block.set_freeze_block(true)
+	
+	if block_number == 1:
+		if block_1:
+			# De-select old block_1
+			block_1.sprite.modulate = Color.WHITE
+			block_1.set_freeze_block(false)
+		# Confirm selection
+		block_1 = block
+	elif block_number == 2:
+		if block_2:
+			# De-select old block_2
+			block_2.sprite.modulate = Color.WHITE
+			block_2.set_freeze_block(false)
+		# Confirm selection
+		block_2 = block
+	pass
+	
 func _input(event):
+	
+	if shift_play_enabled and event is InputEventMouseButton and event.pressed:
+		match event.button_index:
+			MOUSE_BUTTON_LEFT:
+				var block = select_block(1)
+				if block:
+					block_1 = block
+			MOUSE_BUTTON_RIGHT:
+				var block = select_block(2)
+				if block:
+					block_2 = block
+			MOUSE_BUTTON_MIDDLE:
+				if !block_1 or !block_2:
+					return
+				# Swap if adjacent
+				var block_distance = block_1.global_position.distance_to(block_2.global_position)
+				if block_distance > block_1.block_width()*1.5:
+					# blocks are next to each other (close)
+					reset_select()
+					return
+				var swap_position = block_1.global_position
+				block_1.global_position = block_2.global_position
+				block_2.global_position = swap_position
+				reset_select()
+	
 	# Mouse in viewport coordinates.
-	if event is InputEventMouseButton and event.pressed:
+	if !shift_play_enabled and event is InputEventMouseButton and event.pressed:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
 				spawn_block(BlockType.STAR, event.position)
@@ -20,6 +85,8 @@ func _input(event):
 		var cursor_block = get_block_at_cursor()
 		if cursor_block:
 			cursor_block.queue_free()
+	if event is InputEventKey and event.pressed and event.keycode == KEY_SHIFT:
+		shift_play_enabled = !shift_play_enabled
 
 func get_block_at_cursor():
 	var space_state = get_world_2d().direct_space_state
