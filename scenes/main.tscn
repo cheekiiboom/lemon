@@ -35,3 +35,19 @@ texture = ExtResource("5_tbgi4")
 
 [node name="InputHandler" type="Node2D" parent="."]
 script = ExtResource("6_tefeu")
+
+[node name="PlaceModeEnabled" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Mode: Placing"
+
+[node name="PlaceModeEnabled2" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "
+
+
+LMB/MMB/RMB: Star, Mountain, Moon
+X: Delete Block
+Shift: Change Mode"

@@ -1,3 +1,4 @@
+class_name Block
 extends CharacterBody2D
 
 @export var fall_acceleration = 250
@@ -71,12 +72,19 @@ func add_collision_box() -> bool:
 func get_color():
 	return color
 
+func enable_gravity():
+	freeze_block = false
+	collision_shape.disabled = false
+
 # Freeze the block
 # Useful for swapping blocks
 func set_freeze_block(freeze: bool) -> void:
 	collision_shape.disabled = freeze
-	#if freeze:
-	freeze_block = freeze
+	if freeze:
+		freeze_block = freeze
+	else:
+		await get_tree().create_timer(0.1).timeout
+		enable_gravity()
 	# TODO: Fix the blocks from shifting 
 	#		after re-enabling collision + gravity
 
@@ -103,6 +111,10 @@ func get_collison_directions() -> Dictionary:
 			active_raycast_directions.set(dir, collider)
 	return active_raycast_directions
 
+func get_collison_direction(direction: Direction) -> Block:
+	if raycasts[direction]:
+		return raycasts[direction].get_collider()
+	return null
 
 func detect_and_clear_blocks() -> void:
 	# gets the block detected by raycast
@@ -117,22 +129,39 @@ func detect_and_clear_blocks() -> void:
 	# check that the other block's color
 	# is the same as my block's color
 	for dir in colliders:
-		var other: CharacterBody2D = colliders[dir]
+		var other: Block = colliders[dir]
+		var other_same_dir_neighbor: Block = other.get_collison_direction(dir)
 		if other.get_color() != color:
 			# 1st neighbor doesnt share color
 			continue
-		if !colliders.has(opposite_direction(dir)):
+		if colliders.has(opposite_direction(dir)):
 			# 1st neighbor has no opposing 2nd neighbor
 			# 1st neighbor <-- my block --> (missing) 2nd neighbor
-			continue
-		var opposite_other: CharacterBody2D = colliders[opposite_direction(dir)]
-		if opposite_other.get_color() != color:
-			# 2nd neighbor color mismatch
-			continue
-		if other.velocity.is_equal_approx(Vector2.ZERO) and opposite_other.velocity.is_equal_approx(Vector2.ZERO):
-			other.destroy()
-			opposite_other.destroy()
-			destroy()
+			var opposite_other: CharacterBody2D = colliders[opposite_direction(dir)]
+			
+			if opposite_other.get_color() != color:
+				# opp dir neighbor color mismatch
+				continue
+				
+			if other.velocity.is_equal_approx(Vector2.ZERO) \
+				and opposite_other.velocity.is_equal_approx(Vector2.ZERO):
+				
+				other.destroy()
+				opposite_other.destroy()
+				destroy()
+		elif other_same_dir_neighbor:
+			var other_same_dir_neighbor_color = other_same_dir_neighbor.get_color()
+			if other_same_dir_neighbor_color != color:
+				# and same dir neighbor of 1st neighbor color mismatch
+				continue
+				
+			elif other.velocity.is_equal_approx(Vector2.ZERO) \
+				and other_same_dir_neighbor:
+				if !other_same_dir_neighbor.velocity.is_equal_approx(Vector2.ZERO):
+					continue
+				other.destroy()
+				other_same_dir_neighbor.destroy()
+				destroy()
 	return
 
 func opposite_direction(direction: Direction) -> Direction:
